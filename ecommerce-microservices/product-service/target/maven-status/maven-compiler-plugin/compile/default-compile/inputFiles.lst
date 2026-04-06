@@ -1,5 +1,0 @@
-/Applications/MAMP/htdocs/sample-springboot/ecommerce-microservices/product-service/src/main/java/com/ecommerce/product/ProductServiceApplication.java
-/Applications/MAMP/htdocs/sample-springboot/ecommerce-microservices/product-service/src/main/java/com/ecommerce/product/controller/ProductController.java
-/Applications/MAMP/htdocs/sample-springboot/ecommerce-microservices/product-service/src/main/java/com/ecommerce/product/entity/Product.java
-/Applications/MAMP/htdocs/sample-springboot/ecommerce-microservices/product-service/src/main/java/com/ecommerce/product/repository/ProductRepository.java
-/Applications/MAMP/htdocs/sample-springboot/ecommerce-microservices/product-service/src/main/java/com/ecommerce/product/service/ProductService.java
