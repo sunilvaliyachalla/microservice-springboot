@@ -1,6 +1,6 @@
 # E-Commerce Microservices Stack
 
-A complete, production-ready, containerized Spring Boot Microservices architecture integrated with a Vanilla JS/HTML Frontend, Eureka Service Discovery, and Spring Cloud API Gateway.
+A complete, production-ready, containerized Spring Boot Microservices architecture integrated with a modern React (Vite) Frontend, Eureka Service Discovery, and Spring Cloud API Gateway.
 
 ```text
                     ┌──────────────────────────┐
@@ -35,7 +35,7 @@ A complete, production-ready, containerized Spring Boot Microservices architectu
 | Service Discovery| Netflix Eureka                      |
 | API Gateway      | Spring Cloud Gateway (Reactive)     |
 | Database         | PostgreSQL (host.docker.internal)   |
-| Frontend         | Vanilla JS/HTML with Nginx          |
+| Frontend         | React (Vite) with Nginx             |
 | Containerization | Docker & Docker Compose             |
 
 ## Project Structure
@@ -75,9 +75,9 @@ ecommerce-microservices/
 │   └── .dockerignore
 │
 └── ui-service/
-    ├── index.html
-    ├── style.css
-    ├── app.js
+    ├── src/components/
+    ├── package.json
+    ├── vite.config.js
     └── Dockerfile
 ```
 
@@ -88,7 +88,7 @@ This project consists of 5 isolated containerized applications that talk to each
 2. **API Gateway**: Runs on `:8080`. Routes traffic to the correct microservice and handles CORS.
 3. **Product Service**: Runs on `:8081`. Manages products, connected to PostgreSQL.
 4. **Order Service**: Runs on `:8082`. Manages orders, connected to PostgreSQL.
-5. **UI Service**: Runs on `:3000`. A sleek, dark-mode frontend built with pure HTML/JS/CSS served via Nginx.
+5. **UI Service**: Runs on `:3000`. A sleek, dark-mode frontend built with React (Vite) featuring full CRUD coverage, served via Nginx.
 
 ---
 
@@ -122,11 +122,11 @@ For each Java service (`service-registry`, `api-gateway`, `product-service`, `or
 We also created `.dockerignore` files for each service to prevent `target/` and `.git` folders from bloating the Docker context.
 
 ### Phase 4: UI Service Integration
-To make interacting with the APIs visual, we created a brand new `ui-service` folder.
-* Built **without heavy frameworks** — pure HTML, CSS, app.js.
-* Styled with Modern Dark Mode (Glassmorphism, gradients, CSS animations).
-* Packaged into its own lightweight `nginx:alpine` Docker image exposing port `:80` inside the container to `:3000` on the local machine.
-* Configured `globalcors` in the **API Gateway** (`application.yml`) to specifically whitelist web traffic fetching data from `http://localhost:3000`.
+To make interacting with the APIs visual, the `ui-service` is fully powered by **React** using Vite.
+* Built with modern React components for precise state management and handling full CRUD capabilities (`GET/PUT/POST/DELETE`).
+* Features an elegant dynamic dark-mode styling layer (`index.css`).
+* Packaged using a Multi-Stage Dockerfile (Node.js builds the bundle, Nginx serves it on `:80` inside the container) mapped to `:3000` locally.
+* Configured `globalcors` in the **API Gateway** (`application.yml`) to properly whitelist web traffic fetching data from the React frontend (`http://localhost:3000`).
 
 ### Phase 5: Docker Compose Orchestration
 We tied all these pieces together in a `docker-compose.yml`.
