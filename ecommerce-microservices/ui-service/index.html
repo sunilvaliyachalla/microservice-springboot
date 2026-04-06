@@ -1,88 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="glass-container">
-        <header>
-            <h1><span class="gradient-text">E-Commerce</span> Hub</h1>
-            <p>Manage your products and orders seamlessly.</p>
-        </header>
-
-        <main>
-            <section class="card" id="products-section">
-                <div class="card-header">
-                    <h2>Products</h2>
-                    <button class="btn primary" onclick="toggleModal('addProductModal')">Add Product</button>
-                </div>
-                <div class="table-container">
-                    <table id="productsTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Product rows populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section class="card" id="orders-section">
-                <div class="card-header">
-                    <h2>Orders</h2>
-                </div>
-                <div class="table-container">
-                    <table id="ordersTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Order #</th>
-                                <th>Product ID</th>
-                                <th>Qty</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Order rows populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Modals -->
-    <div class="modal-overlay" id="addProductModal">
-        <div class="modal">
-            <h2>Add New Product</h2>
-            <form id="addProductForm">
-                <div class="input-group">
-                    <label for="productName">Name</label>
-                    <input type="text" id="productName" required placeholder="e.g. Mechanical Keyboard">
-                </div>
-                <div class="input-group">
-                    <label for="productPrice">Price ($)</label>
-                    <input type="number" step="0.01" id="productPrice" required placeholder="149.99">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn outline" onclick="toggleModal('addProductModal')">Cancel</button>
-                    <button type="submit" class="btn primary">Save Product</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Notification Toast -->
-    <div id="toast" class="toast">Action completed successfully</div>
-
-    <script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ui-service</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

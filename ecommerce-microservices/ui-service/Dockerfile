@@ -1,5 +1,12 @@
+# Stage 1: Build the React Application
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Serve the application via Nginx
 FROM nginx:alpine
-COPY index.html /usr/share/nginx/html/
-COPY style.css /usr/share/nginx/html/
-COPY app.js /usr/share/nginx/html/
+COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
