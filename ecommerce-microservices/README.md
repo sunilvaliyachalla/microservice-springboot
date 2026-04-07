@@ -248,3 +248,10 @@ git rm -r --cached "*/target" "target"
 git add .
 git commit -m "Removed target folders from git tracking"
 ```
+
+### Phase 7: Production Cloud Configuration (AWS RDS & EKS)
+To ensure the stack is flawlessly production-ready, we generated Cloud-native deployment files to supersede the local containerized environment completely:
+1. **Terraform (`terraform/main.tf`)**: Automatically provisions a scalable **AWS EKS** (Kubernetes) cluster and a managed, highly-available **AWS RDS PostgreSQL** instance (`db.t3.micro`).
+2. **Kubernetes Manifests (`k8s/`)**: The monolithic `docker-compose.yml` was cleanly dismantled into structural K8s Deployments, ClusterIPs, and LoadBalancers.
+3. **Explicit Spring Boot Fallbacks (`application.yml`)**: To ensure both the `product-service` and `order-service` connect securely to the remote AWS RDS instance in production, we utilized Spring's Native bindings (`${SPRING_DATASOURCE_URL:jdbc...}`). The apps gracefully pull AWS variables injected by Kubernetes Secrets at runtime, but perfectly fall back to local properties (`localhost:5434`) during manual testing without needing any Java code modifications.
+4. **CI/CD (`.github/workflows/main.yml`)**: A GitHub automation pipeline that simultaneously multi-stage compiles all 5 images, pushes them to the remote Docker registry, and triggers rolling updates in EKS.
