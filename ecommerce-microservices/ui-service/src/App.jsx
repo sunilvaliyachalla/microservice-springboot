@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import ProductList from './components/ProductList';
 import OrderList from './components/OrderList';
+import UserManagement from './components/UserManagement';
 import Login from './components/Login';
-import { getToken, logout as apiLogout } from './api';
+import { getToken, getRole, logout as apiLogout } from './api';
 import './index.css';
+
+const PRIVILEGED_ROLES = ['SUPERADMIN', 'ADMIN', 'MANAGER'];
 
 function App() {
   const [activeTab, setActiveTab] = useState('products');
   const [authed, setAuthed] = useState(Boolean(getToken()));
+
+  const role = getRole();
+  const canManageUsers = PRIVILEGED_ROLES.includes(role);
 
   const handleLogout = () => {
     apiLogout();
@@ -30,7 +36,7 @@ function App() {
     <div className="app-container">
       <header>
         <h1><span className="gradient-text">E-Commerce</span> React Hub</h1>
-        <p>Full CRUD actions via API Gateway.</p>
+        <p>Signed in{role ? ` as ${role}` : ''}. Full CRUD actions via API Gateway.</p>
         <button className="btn outline sm-btn" onClick={handleLogout}>Sign Out</button>
       </header>
 
@@ -47,11 +53,20 @@ function App() {
         >
             Manage Orders
         </button>
+        {canManageUsers && (
+          <button
+              className={`btn ${activeTab === 'users' ? 'primary' : 'outline'}`}
+              onClick={() => setActiveTab('users')}
+          >
+              Manage Users
+          </button>
+        )}
       </nav>
 
       <main>
         {activeTab === 'products' && <ProductList />}
         {activeTab === 'orders' && <OrderList />}
+        {activeTab === 'users' && canManageUsers && <UserManagement />}
       </main>
     </div>
   );

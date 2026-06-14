@@ -38,6 +38,16 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: JWT_SECRET
+            - name: SUPERADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SUPERADMIN_USERNAME
+            - name: SUPERADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SUPERADMIN_PASSWORD
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: "http://service-registry:8761/eureka/"
 ---

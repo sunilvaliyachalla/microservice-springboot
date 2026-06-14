@@ -43,8 +43,9 @@ jwt:
   secret: ${JWT_SECRET:change-me-in-production-this-is-a-long-dev-only-secret-key-0123456789}
 
 # Comma-separated path prefixes that bypass JWT validation.
+# Only login is public; user creation (/api/auth/users) requires a valid token.
 security:
-  public-paths: ${SECURITY_PUBLIC_PATHS:/api/auth/}
+  public-paths: ${SECURITY_PUBLIC_PATHS:/api/auth/login}
 
 eureka:
   client:
