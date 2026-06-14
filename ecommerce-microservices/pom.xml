@@ -14,6 +14,7 @@
     <modules>
         <module>service-registry</module>
         <module>api-gateway</module>
+        <module>auth-service</module>
         <module>product-service</module>
         <module>order-service</module>
     </modules>

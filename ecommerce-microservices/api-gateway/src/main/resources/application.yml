@@ -22,6 +22,11 @@ spring:
             allowCredentials: true
             maxAge: 3600
       routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
@@ -32,7 +37,16 @@ spring:
           predicates:
             - Path=/api/orders/**
 
+# JWT signing secret, shared with auth-service. MUST be overridden via
+# environment in any real deployment.
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-this-is-a-long-dev-only-secret-key-0123456789}
+
+# Comma-separated path prefixes that bypass JWT validation.
+security:
+  public-paths: ${SECURITY_PUBLIC_PATHS:/api/auth/}
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
