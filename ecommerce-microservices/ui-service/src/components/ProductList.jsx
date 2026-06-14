@@ -5,7 +5,7 @@ export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
-    const [formData, setFormData] = useState({ name: '', price: '' });
+    const [formData, setFormData] = useState({ name: '', price: '', stock: 0 });
 
     const loadProducts = async () => {
         try {
@@ -28,7 +28,7 @@ export default function ProductList() {
             }
             setIsModalOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', price: '' });
+            setFormData({ name: '', price: '', stock: 0 });
             loadProducts();
         } catch (e) {
             alert('Action failed');
@@ -47,13 +47,13 @@ export default function ProductList() {
 
     const startEdit = (p) => {
         setEditingProduct(p);
-        setFormData({ name: p.name, price: p.price });
+        setFormData({ name: p.name, price: p.price, stock: p.stock ?? 0 });
         setIsModalOpen(true);
     };
 
     const startAdd = () => {
         setEditingProduct(null);
-        setFormData({ name: '', price: '' });
+        setFormData({ name: '', price: '', stock: 0 });
         setIsModalOpen(true);
     };
 
@@ -70,17 +70,19 @@ export default function ProductList() {
                             <th>ID</th>
                             <th>Name</th>
                             <th>Price</th>
+                            <th>Stock</th>
                             <th style={{ textAlign: 'right' }}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {products.length === 0 ? (
-                            <tr><td colSpan="4" style={{ textAlign: 'center' }}>No products found...</td></tr>
+                            <tr><td colSpan="5" style={{ textAlign: 'center' }}>No products found...</td></tr>
                         ) : products.map(p => (
                             <tr key={p.id}>
                                 <td>#{p.id}</td>
                                 <td>{p.name}</td>
-                                <td style={{ color: '#3fb950', fontWeight: 'bold' }}>${p.price.toFixed(2)}</td>
+                                <td style={{ color: '#3fb950', fontWeight: 'bold' }}>${Number(p.price).toFixed(2)}</td>
+                                <td>{p.stock ?? 0}</td>
                                 <td style={{ textAlign: 'right' }}>
                                     <button className="btn outline sm-btn mr-2" onClick={() => startEdit(p)}>Edit</button>
                                     <button className="btn danger sm-btn" onClick={() => deleteProduct(p.id)}>Delete</button>
@@ -103,6 +105,10 @@ export default function ProductList() {
                             <div className="input-group">
                                 <label>Price ($)</label>
                                 <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} required placeholder="149.99" />
+                            </div>
+                            <div className="input-group">
+                                <label>Stock</label>
+                                <input type="number" min="0" step="1" value={formData.stock} onChange={e => setFormData({ ...formData, stock: parseInt(e.target.value) })} required placeholder="100" />
                             </div>
                             <div className="modal-actions">
                                 <button type="button" className="btn outline" onClick={() => setIsModalOpen(false)}>Cancel</button>

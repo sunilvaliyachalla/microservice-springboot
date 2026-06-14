@@ -1,6 +1,10 @@
 package com.ecommerce.order.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "orders")
@@ -10,12 +14,17 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Order number must not be blank")
+    @Size(max = 64, message = "Order number must be at most 64 characters")
     @Column(name = "order_number", nullable = false, unique = true)
     private String orderNumber;
 
+    @NotNull(message = "Product id is required")
     @Column(name = "product_id", nullable = false)
     private Long productId;
 
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
     @Column(nullable = false)
     private Integer quantity;
 
