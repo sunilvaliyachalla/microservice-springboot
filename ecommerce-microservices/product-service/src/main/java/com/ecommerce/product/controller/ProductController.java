@@ -1,7 +1,9 @@
 package com.ecommerce.product.controller;
 
+import com.ecommerce.product.dto.StockUpdateRequest;
 import com.ecommerce.product.entity.Product;
 import com.ecommerce.product.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +33,20 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
         Product created = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
         return ResponseEntity.ok(productService.updateProduct(id, product));
+    }
+
+    @PutMapping("/{id}/decrease-stock")
+    public ResponseEntity<Product> decreaseStock(@PathVariable Long id,
+                                                 @Valid @RequestBody StockUpdateRequest request) {
+        return ResponseEntity.ok(productService.decreaseStock(id, request.getQuantity()));
     }
 
     @DeleteMapping("/{id}")

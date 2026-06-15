@@ -21,6 +21,30 @@ module "vpc" {
   create_database_subnet_group = true
 }
 
+# --- Dedicated security group for the database ---
+# Only the EKS nodes (inside the VPC) may reach Postgres, instead of relying
+# on the permissive default security group.
+resource "aws_security_group" "db" {
+  name        = "${var.cluster_name}-db-sg"
+  description = "Allow PostgreSQL access from within the VPC only"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "PostgreSQL from VPC"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [module.vpc.vpc_cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # --- AWS RDS (Production Database) Setup ---
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
@@ -43,13 +67,18 @@ module "db" {
 
   multi_az               = false
   db_subnet_group_name   = module.vpc.database_subnet_group_name
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  vpc_security_group_ids = [aws_security_group.db.id]
+
+  # Let the module create and rotate the master password in AWS Secrets Manager
+  # instead of managing a plaintext password in Terraform state.
+  manage_master_user_password = true
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
 
-  # Important parameter in prod to ensure actual snapshots happen
-  skip_final_snapshot = true 
+  # Take a final snapshot on deletion so production data is not lost.
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "ecommerce-postgres-prod-final"
 }
 
 # --- EKS Cluster Setup ---
@@ -73,7 +102,9 @@ module "eks" {
     }
   }
 
-  cluster_endpoint_public_access = true
+  cluster_endpoint_private_access      = true
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs
 }
 
 output "cluster_endpoint" {

@@ -21,6 +21,29 @@ services:
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-this-is-a-long-dev-only-secret-key-0123456789}
+    depends_on:
+      service-registry:
+        condition: service_healthy
+    networks:
+      - ecommerce-net
+
+  auth-service:
+    build: ./auth-service
+    container_name: ecommerce-auth-service
+    # No published host port: reachable only via the gateway on the internal
+    # network, since /api/auth/users is a privileged endpoint.
+    expose:
+      - "8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5434/mydb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-this-is-a-long-dev-only-secret-key-0123456789}
+      SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-superadmin}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-ChangeMe_Sup3rAdmin!}
     depends_on:
       service-registry:
         condition: service_healthy
@@ -65,7 +88,7 @@ services:
     build: ./ui-service
     container_name: ecommerce-ui-service
     ports:
-      - "3000:80"
+      - "3000:8080"
     depends_on:
       api-gateway:
         condition: service_started

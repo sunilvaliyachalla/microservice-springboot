@@ -44,6 +44,13 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-api-gateway:latest
 
+      - name: Build and Push Auth Service
+        uses: docker/build-push-action@v4
+        with:
+          context: ./auth-service
+          push: true
+          tags: ${{ env.REGISTRY }}/ecommerce-auth-service:latest
+
       - name: Build and Push Product Service
         uses: docker/build-push-action@v4
         with:

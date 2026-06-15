@@ -1,0 +1,37 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/mydb}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+# Shared signing secret for JWTs. MUST be overridden via environment in any
+# real deployment and kept in sync with the api-gateway.
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-this-is-a-long-dev-only-secret-key-0123456789}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+# Initial SUPERADMIN account. Seeded on first startup only when a password is
+# provided. There is no public self-registration; the superadmin creates all
+# other users (admin, manager, ...).
+superadmin:
+  username: ${SUPERADMIN_USERNAME:superadmin}
+  password: ${SUPERADMIN_PASSWORD:}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}

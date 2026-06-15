@@ -9,3 +9,9 @@ variable "cluster_name" {
   type        = string
   default     = "ecommerce-production-cluster"
 }
+
+variable "cluster_endpoint_public_access_cidrs" {
+  description = "CIDR blocks allowed to reach the public EKS API endpoint. Restrict to trusted networks; do not use 0.0.0.0/0 in production."
+  type        = list(string)
+  default     = []
+}
