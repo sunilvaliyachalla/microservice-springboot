@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:h2:mem:authdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  cloud:
+    discovery:
+      enabled: false
+
+jwt:
+  secret: test-secret-key-for-jwt-signing-0123456789-abcdefghijklmnop
+  expiration-ms: 3600000
+
+superadmin:
+  username: root
+  password: RootPass123!
+
+eureka:
+  client:
+    enabled: false

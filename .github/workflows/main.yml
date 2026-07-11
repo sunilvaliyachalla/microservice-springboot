@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 env:
   REGISTRY: your-docker-registry
@@ -10,8 +11,47 @@ env:
   AWS_REGION: us-east-1
 
 jobs:
+  test:
+    name: Unit, Integration & E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run backend unit & integration tests
+        run: mvn -B test
+        working-directory: ./ecommerce-microservices
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install UI dependencies
+        run: npm ci
+        working-directory: ./ecommerce-microservices/ui-service
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: ./ecommerce-microservices/ui-service
+
+      - name: Run Playwright e2e tests
+        run: npm run test:e2e
+        working-directory: ./ecommerce-microservices/ui-service
+        env:
+          CI: 'true'
+
   build-and-push:
     name: Build & Push Images
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -33,48 +73,49 @@ jobs:
       - name: Build and Push Service Registry
         uses: docker/build-push-action@v4
         with:
-          context: ./service-registry
+          context: ./ecommerce-microservices/service-registry
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-service-registry:latest
 
       - name: Build and Push API Gateway
         uses: docker/build-push-action@v4
         with:
-          context: ./api-gateway
+          context: ./ecommerce-microservices/api-gateway
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-api-gateway:latest
 
       - name: Build and Push Auth Service
         uses: docker/build-push-action@v4
         with:
-          context: ./auth-service
+          context: ./ecommerce-microservices/auth-service
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-auth-service:latest
 
       - name: Build and Push Product Service
         uses: docker/build-push-action@v4
         with:
-          context: ./product-service
+          context: ./ecommerce-microservices/product-service
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-product-service:latest
 
       - name: Build and Push Order Service
         uses: docker/build-push-action@v4
         with:
-          context: ./order-service
+          context: ./ecommerce-microservices/order-service
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-order-service:latest
 
       - name: Build and Push UI Service
         uses: docker/build-push-action@v4
         with:
-          context: ./ui-service
+          context: ./ecommerce-microservices/ui-service
           push: true
           tags: ${{ env.REGISTRY }}/ecommerce-ui-service:latest
 
   deploy-to-eks:
     name: Deploy to Kubernetes
     needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -91,7 +132,7 @@ jobs:
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
       - name: Deploy Infrastructure
-        run: kubectl apply -f k8s/infrastructure/
+        run: kubectl apply -f ecommerce-microservices/k8s/infrastructure/
 
       - name: Deploy Microservices
-        run: kubectl apply -f k8s/services/
+        run: kubectl apply -f ecommerce-microservices/k8s/services/
