@@ -49,8 +49,10 @@ export async function fetchAPI(endpoint, options = {}) {
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    if (response.status === 401) {
-        // Token missing/expired: clear it so the app returns to the login screen.
+    // A 401 on a normal API call means the session expired; a 401 from the
+    // login endpoint itself just means bad credentials and falls through to
+    // the regular error handling below.
+    if (response.status === 401 && !endpoint.startsWith('/auth/login')) {
         logout();
         throw new UnauthorizedError('Session expired. Please sign in again.');
     }
